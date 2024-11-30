@@ -121,7 +121,9 @@ char game() {
             if (put_on_board(&board)) {
                 char c = check_win(board);
                 if (c != ' ') {
-                    printf("The %c player are the winner!\n", c);
+                    clear_buffer();
+                    print_board(&board);
+                    printf("\nThe %c player are the winner!\n", c);
                     press_to_close();
                     break;
                 }
