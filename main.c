@@ -2,7 +2,6 @@
 #include <strings.h>
 #include <unistd.h>
 #include <termios.h>
-#include <stdlib.h>
 #include <stdbool.h>
 
 void open_alternative_buffer() {
@@ -22,8 +21,8 @@ void clear_buffer() {
 
 struct Board {
     char board[3][3];
-    ushort x_selected;
-    ushort y_selected;
+    unsigned short x_selected;
+    unsigned short y_selected;
     bool x_turn;
 };
 
@@ -57,10 +56,10 @@ Board new_board() {
 void print_board(Board *board) {
     printf("Turn Of: '%c'\n", (board->x_turn?'X':'O'));
 
-    for (uint y = 0; y < 3; y++) {
+    for (unsigned short y = 0; y < 3; y++) {
         if (y != 0)
             printf("\n─┼─┼─\n");
-        for (uint x = 0; x < 3; x++) {
+        for (unsigned short x = 0; x < 3; x++) {
             if (x != 0) printf("│");
             if (x == board->x_selected && y == board->y_selected)
                 printf("\x1b[48;2;55;55;55m");
@@ -73,13 +72,13 @@ void print_board(Board *board) {
 }
 
 char check_win(Board board) {
-    for (uint y = 0; y < 3; y++) {
+    for (unsigned short y = 0; y < 3; y++) {
         char *fila = board.board[y];
         if (fila[0] == fila[1] && fila[1] == fila[2] && fila[0] != INIT_CELL)
             return fila[0];
     }
 
-    for (uint x = 0; x < 3; x++) {
+    for (unsigned short x = 0; x < 3; x++) {
         if (board.board[0][x] == board.board[1][x] && board.board[1][x] == board.board[2][x] && board.board[0][x] != INIT_CELL)
             return board.board[0][x];
     }
