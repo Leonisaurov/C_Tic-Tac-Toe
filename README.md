@@ -6,7 +6,7 @@ It just needs a C compiler, I usually use gcc, but you can use whatever you want
 ### Construct
 
 ```bash
-gcc main.c -o tictactoc
+gcc main.c -o tictactoe
 ```
 
 ### Play
