@@ -3,6 +3,7 @@
 #include "screen.h"
 
 #include "menu.h"
+#define DRAW_CELL 27
 
 void print_board(Board *board, Config conf) {
     printf("Turn Of: '%c'\n", (board->x_turn?conf.player_1_symbol:conf.player_2_symbol));
@@ -23,22 +24,54 @@ void print_board(Board *board, Config conf) {
 }
 
 char check_win(Board board) {
+    bool blank = false;
     for (unsigned short y = 0; y < 3; y++) {
         char *fila = board.board[y];
-        if (fila[0] == fila[1] && fila[1] == fila[2] && fila[0] != INIT_CELL)
-            return fila[0];
+        if (fila[0] == INIT_CELL) {
+            blank = true;
+        } else if (fila[0] == fila[1]) {
+            if (fila[1] == fila[2])
+                return fila[0];
+            else if (fila[2] == INIT_CELL)
+                blank = true;
+        } else if (fila[1] == INIT_CELL)
+            blank = true;
     }
 
     for (unsigned short x = 0; x < 3; x++) {
-        if (board.board[0][x] == board.board[1][x] && board.board[1][x] == board.board[2][x] && board.board[0][x] != INIT_CELL)
-            return board.board[0][x];
+        if (board.board[0][x] == INIT_CELL)
+            blank = true;
+        else if (board.board[0][x] == board.board[1][x]) {
+            if (board.board[1][x] == board.board[2][x])
+                return board.board[0][x];
+            else if (board.board[2][x] == INIT_CELL)
+                blank = true;
+        } else if (board.board[1][x] == INIT_CELL)
+            blank = true;
     }
 
-    if (board.board[0][0] == board.board[1][1] && board.board[1][1] == board.board[2][2] && board.board[2][2] != INIT_CELL)
-        return board.board[0][0];
+    if (board.board[0][0] == INIT_CELL)
+        blank = true;
+    else if (board.board[0][0] == board.board[1][1]) {
+        if(board.board[1][1] == board.board[2][2])
+            return board.board[0][0];
+        else if (board.board[2][2] == INIT_CELL)
+            blank = true;
+    } else if (board.board[1][1] == INIT_CELL)
+        blank = true;
 
-    if (board.board[0][2] == board.board[1][1] && board.board[1][1] == board.board[2][0] && board.board[2][0] != INIT_CELL)
-        return board.board[0][2];
+    if (board.board[2][0] == INIT_CELL)
+        blank = true;
+    else if (board.board[0][2] == board.board[1][1]) {
+        if (board.board[1][1] == board.board[2][0])
+            return board.board[0][2];
+        else if (board.board[2][0] == INIT_CELL)
+            blank = true;
+    } else if (board.board[1][1] == INIT_CELL)
+        blank = true;
+
+    if (blank == false)
+        return DRAW_CELL;
 
     return INIT_CELL;
 }
@@ -53,10 +86,20 @@ bool put_on_board(Board *board, Config conf) {
     return false;
 }
 
-void press_to_close() {
-    puts("Press a key to continue. . .");
+short press_to_close() {
+    puts("Press r to play again.");
+    puts("      q to exit.");
     char c;
-    read(STDIN_FILENO, &c, 1);
+    short n = read(STDIN_FILENO, &c, 1);
+    fprintf(stderr, "Input: %c\n", c);
+    if (n != 1) return -1;
+
+    fprintf(stderr, "Despues del error\n");
+    if (c == 'r') return 1;
+    fprintf(stderr, "C, no es igual a 'r'\n");
+    if (c == 'q') return 0;
+
+    return 2;
 }
 
 char game(Config conf) {
@@ -74,11 +117,24 @@ char game(Config conf) {
             case KEY_ENTER:
                 if (put_on_board(&board, conf)) {
                     char c = check_win(board);
-                    if (c != ' ') {
-                        clear_buffer();
-                        print_board(&board, conf);
-                        printf("\nThe %c player are the winner!\n", c);
-                        press_to_close();
+                    if (c != INIT_CELL) {
+                        while (true) {
+                            clear_buffer();
+                            print_board(&board, conf);
+                            if (c == DRAW_CELL)
+                                printf("\nDraw! Anyone win. . .\n");
+                            else
+                                printf("\nThe %c player are the winner!\n", c);
+                            short res = press_to_close();
+                            if (res == 2) continue;
+
+                            if (res < 1) end_flag = true;
+                            else if (res == 1) {
+                                board = new_board();
+                                fprintf(stderr, "Hola\n");
+                            }
+                            break;
+                        }
                         break;
                     }
                 }
