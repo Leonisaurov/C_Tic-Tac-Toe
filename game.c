@@ -27,7 +27,8 @@ void print_board(Board *board, Config conf) {
             if (x == board->x_selected && y == board->y_selected)
                 printf("\x1b[48;2;127;127;127m");
             char tile = board->board[y][x];
-            unsigned short color[3];
+            if (tile == INIT_CELL) tile = ' ';
+            unsigned short color[3] = {255, 255, 255};
             if (tile == conf.player_1_symbol) {
                 color[0] = conf.player_1_color[0];
                 color[1] = conf.player_1_color[1];
