@@ -18,15 +18,7 @@ char main_menu() {
     do {
         switch(action) {
             case KEY_ENTER:
-                if (cursor == 2) {
-                    conf.player_1_symbol = get_options()[0].value;
-                    conf.player_2_symbol = get_options()[1].value;
-                    clear_buffer();
-                    game_returncode = game(conf);
-                    clear_buffer();
-                }
-                else
-                    set_option(cursor);
+                set_option(cursor, &conf);
                 break;
             case KEY_UP:
                 if (cursor > 0) cursor--;
@@ -45,23 +37,23 @@ char main_menu() {
         clear_buffer();
         unsigned int i = 0;
         while (get_options()[i].question != NULL) {
+            if (i != 0)
+                printf("\n");
             Option opt = get_options()[i];
             if (cursor == i) printf("\x1b[48;2;150;150;150m");
 
-            switch(opt.type) {
+           switch(opt.type) {
                 case CHAR_OPTION:
-                    printf("%s: \x1b[4m%c\x1b[0m", opt.question, opt.value);
+                    printf("%s\x1b[4m%c\x1b[0m", opt.question, (char)opt.value);
+                    break;
+                case BUTTON_OPTION:
+                    printf("[%s]", opt.question);
                     break;
             }
 
             if (cursor == i) printf("\x1b[0m");
-            printf("\n");
             i++;
         }
-
-        if (cursor == i) printf("\x1b[48;2;150;150;150m");
-        printf("--- Start Game ---");
-        if (cursor == i) printf("\x1b[0m");
 
         fflush(stdout);
     } while ((game_returncode == RETURN_MENU_CODE) && (action = process_action()) != QUIT);
