@@ -130,8 +130,9 @@ char game(Config conf) {
 
                             if (res < 1) end_flag = true;
                             else if (res == 1) {
+                                bool turn = board.x_turn;
                                 board = new_board();
-                                fprintf(stderr, "Hola\n");
+                                board.x_turn = turn;
                             }
                             break;
                         }
