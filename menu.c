@@ -5,8 +5,6 @@
 
 #include "config.h"
 
-#include "game.h"
-
 char main_menu() {
     Config conf = get_default_config();
     open_alternative_buffer();
@@ -17,8 +15,8 @@ char main_menu() {
     int game_returncode = RETURN_MENU_CODE;
     do {
         switch(action) {
-            case KEY_ENTER:
-                set_option(cursor, &conf);
+            case KEY_ENTER: 
+                game_returncode = set_option(cursor, &conf);
                 break;
             case KEY_UP:
                 if (cursor > 0) cursor--;

@@ -30,7 +30,7 @@ Option* get_options() {
     return opts;
 }
 
-void set_option(unsigned int i, Config *conf) {
+int set_option(unsigned int i, Config *conf) {
     Option opt = opts[i];
     const char* question = opt.question;
 
@@ -43,9 +43,10 @@ void set_option(unsigned int i, Config *conf) {
             opts[i].value = (void*)c;
             break;
         case BUTTON_OPTION:
-            ((void*(*) (Config))opts[i].value)(*conf);
+            return ((int(*) (Config))opts[i].value)(*conf);
             break;
     }
+    return RETURN_MENU_CODE;
 }
 // #include <stdlib.h>
 //

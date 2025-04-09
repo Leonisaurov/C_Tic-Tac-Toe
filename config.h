@@ -27,6 +27,6 @@ typedef struct {
 } Option;
 
 Option* get_options();
-void set_option(unsigned int i, Config *conf);
+int set_option(unsigned int i, Config *conf);
 
 #endif
