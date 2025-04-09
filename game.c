@@ -14,7 +14,7 @@ void print_board(Board *board, Config conf) {
         for (unsigned short x = 0; x < 3; x++) {
             if (x != 0) printf("│");
             if (x == board->x_selected && y == board->y_selected)
-                printf("\x1b[48;2;55;55;55m");
+                printf("\x1b[48;2;127;127;127m");
             printf("%c", board->board[y][x]);
             if (x == board->x_selected && y == board->y_selected)
                 printf("\x1b[0m");
