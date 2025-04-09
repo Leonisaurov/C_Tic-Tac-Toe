@@ -58,7 +58,6 @@ int set_option(unsigned int i, Config *conf) {
             break;
         case BUTTON_OPTION:
             return ((int(*) (Config))opts[i].value)(*conf);
-            break;
     }
 
     return RETURN_MENU_CODE;
