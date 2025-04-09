@@ -30,6 +30,19 @@ Option* get_options() {
     return opts;
 }
 
+#include "string.h"
+
+void set_conf(Config *conf, char *title, void* any) {
+    if (strcmp(title, opts[0].question) == 0) {
+        conf->player_1_symbol = (char)any;
+        return;
+    }
+    if (strcmp(title, opts[1].question) == 0) {
+        conf->player_2_symbol = (char)any;
+        return;
+    }
+}
+
 int set_option(unsigned int i, Config *conf) {
     Option opt = opts[i];
     const char* question = opt.question;
@@ -37,29 +50,16 @@ int set_option(unsigned int i, Config *conf) {
     char c;
     switch(opt.type) {
         case CHAR_OPTION:
-            printf("%s", question);
+            printf("\n%s", question);
             fflush(stdout);
             read(STDIN_FILENO, &c, 1);
             opts[i].value = (void*)c;
+            set_conf(conf, opts[i].question, (void*)c);
             break;
         case BUTTON_OPTION:
             return ((int(*) (Config))opts[i].value)(*conf);
             break;
     }
+
     return RETURN_MENU_CODE;
 }
-// #include <stdlib.h>
-//
-// typedef Option* Options;
-// unsigned int opt_n = 0;
-//
-// Options opts = NULL;
-//
-// Options add_option(Option opt) {
-//     Options new_opts = (Options) realloc(opts, sizeof(Option) * (opt_n + 1));
-//     if (new_opts == NULL) return new_opts;
-//     opts = new_opts;
-//     opts[opt_n] = opt;
-//     opt_n++;
-//     return opts;
-// }

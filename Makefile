@@ -12,3 +12,6 @@ compile: *.c *.h
 
 run: compile
 	./${BINARY}
+
+clean:
+	rm -rfv ${BINARY}

@@ -11,7 +11,7 @@ int main() {
     tcgetattr(STDIN_FILENO, &raw_term);
     original_term = raw_term;
 
-    raw_term.c_lflag &= ~ICANON;
+    raw_term.c_lflag &= ~(ICANON | ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &raw_term);
 
     printf("\x1b[?25l");
@@ -21,6 +21,7 @@ int main() {
 
     printf("\x1b[?25h");
     fflush(stdout);
+
     tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
     return res;
 }
