@@ -22,7 +22,7 @@ char main_menu() {
                 if (cursor > 0) cursor--;
                 break;
             case KEY_DOWN:
-                if (cursor < 2) cursor++;
+                if (cursor < 4) cursor++;
                 break;
             case KEY_LEFT:
             case KEY_RIGHT:
@@ -43,6 +43,9 @@ char main_menu() {
            switch(opt.type) {
                 case CHAR_OPTION:
                     printf("%s\x1b[4m%c\x1b[0m", opt.question, (char)opt.value);
+                    break;
+                case COLOR_OPTION:
+                    printf("%s[%u, %u, %u]", opt.question, ((unsigned short*)opt.value)[0], ((unsigned short*)opt.value)[1], ((unsigned short*)opt.value)[2]);
                     break;
                 case BUTTON_OPTION:
                     printf("[%s]", opt.question);

@@ -6,7 +6,18 @@
 #define DRAW_CELL 27
 
 void print_board(Board *board, Config conf) {
-    printf("Turn Of: '%c'\n", (board->x_turn?conf.player_1_symbol:conf.player_2_symbol));
+    char player = (board->x_turn?conf.player_1_symbol:conf.player_2_symbol);
+    unsigned short color[3];
+    if (player == conf.player_1_symbol) {
+        color[0] = conf.player_1_color[0];
+        color[1] = conf.player_1_color[1];
+        color[2] = conf.player_1_color[2];
+    } else if (player == conf.player_2_symbol) {
+        color[0] = conf.player_2_color[0];
+        color[1] = conf.player_2_color[1];
+        color[2] = conf.player_2_color[2];
+    }
+    printf("Turn Of: '\x1b[38;2;%u;%u;%um%c\x1b[0m'\n", color[0], color[1], color[2], player);
 
     for (unsigned short y = 0; y < 3; y++) {
         if (y != 0)
@@ -15,9 +26,18 @@ void print_board(Board *board, Config conf) {
             if (x != 0) printf("│");
             if (x == board->x_selected && y == board->y_selected)
                 printf("\x1b[48;2;127;127;127m");
-            printf("%c", board->board[y][x]);
-            if (x == board->x_selected && y == board->y_selected)
-                printf("\x1b[0m");
+            char tile = board->board[y][x];
+            unsigned short color[3];
+            if (tile == conf.player_1_symbol) {
+                color[0] = conf.player_1_color[0];
+                color[1] = conf.player_1_color[1];
+                color[2] = conf.player_1_color[2];
+            } else if (tile == conf.player_2_symbol) {
+                color[0] = conf.player_2_color[0];
+                color[1] = conf.player_2_color[1];
+                color[2] = conf.player_2_color[2];
+            }
+            printf("\x1b[38;2;%d;%d;%dm%c\x1b[0m", color[0], color[1], color[2], tile);
         }
     }
     fflush(stdout);

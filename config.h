@@ -6,17 +6,26 @@
 typedef struct {
     char player_1_symbol;
     char player_2_symbol;
+    unsigned short player_1_color[3];
+    unsigned short player_2_color[3];
 } Config;
 
 static Config get_default_config() {
     return (Config) {
         .player_1_symbol = 'x',
         .player_2_symbol = 'o',
+        .player_1_color = {
+            200, 100, 150
+        },
+        .player_2_color = {
+            100, 200, 150
+        },
     };
 }
 
 typedef enum {
     CHAR_OPTION,
+    COLOR_OPTION,
     BUTTON_OPTION,
 } OptionType;
 
