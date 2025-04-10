@@ -43,5 +43,6 @@ static Board new_board() {
 }
 
 char game(Config conf);
+char game_with_ai(Config conf);
 
 #endif

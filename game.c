@@ -5,6 +5,8 @@
 #include "menu.h"
 #define DRAW_CELL 27
 
+#include "gemini.h"
+
 void print_board(Board *board, Config conf) {
     printf("Turn Of: '%c'\n", (board->x_turn?conf.player_1_symbol:conf.player_2_symbol));
 
@@ -163,6 +165,79 @@ char game(Config conf) {
 
         clear_buffer();
         print_board(&board, conf);
+    } while (!end_flag && (action = process_action()) != QUIT);
+
+    return 0;
+}
+
+char game_with_ai(Config conf) {
+    Board board = new_board();
+    ACTION action = KEY_UP;
+
+    _Bool end_flag = false;
+    do {
+        switch(action) {
+            case RETURN:
+                return RETURN_MENU_CODE;
+            case QUIT:
+                end_flag = true;
+                break;
+            case KEY_ENTER:
+                if (board.x_turn && put_on_board(&board, conf)) {
+                    char c = check_win(board);
+                    if (c != INIT_CELL) {
+                        while (true) {
+                            clear_buffer();
+                            print_board(&board, conf);
+                            if (c == DRAW_CELL)
+                                printf("\nDraw! Anyone win. . .\n");
+                            else
+                                printf("\nThe %c player are the winner!\n", c);
+                            short res = press_to_close();
+                            if (res == 2) continue;
+
+                            if (res < 1) end_flag = true;
+                            else if (res == 1) {
+                                board = new_board();
+                                fprintf(stderr, "Hola\n");
+                            }
+                            break;
+                        }
+                        break;
+                    }
+                }
+                break;
+            case KEY_UP:
+                if(board.y_selected > 0)
+                    board.y_selected--;
+                break;
+            case KEY_DOWN:
+                if(board.y_selected < 2)
+                    board.y_selected++;
+                break;
+            case KEY_LEFT:
+                if(board.x_selected > 0)
+                    board.x_selected--;
+                break;
+            case KEY_RIGHT:
+                if(board.x_selected < 2)
+                    board.x_selected++;
+                break;
+            case NONE: {
+                           // Another KEY Input
+                           MOVE move;
+                           move = gemini_decide(board, conf);
+                           board.x_selected = move.x;
+                           board.y_selected = move.y;
+                           put_on_board(&board, conf);
+                           break;
+                       }
+        }
+
+        clear_buffer();
+        print_board(&board, conf);
+        if (!board.x_turn)
+            puts("Press 'r' to request the AI response!");
     } while (!end_flag && (action = process_action()) != QUIT);
 
     return 0;

@@ -8,7 +8,7 @@ else
 endif
 
 compile: *.c *.h
-	$(COMPILE_CMD)
+	$(COMPILE_CMD) -lcurl -ljansson
 
 run: compile
 	./${BINARY}
