@@ -33,6 +33,11 @@ Option opts[] = {
         .value = game,
     },
     {
+        .question = "  Start Game VS AI  ",
+        .type = BUTTON_OPTION,
+        .value = game_with_ai,
+    },
+    {
         .question = NULL,
         .type = CHAR_OPTION,
         .value = NULL,
