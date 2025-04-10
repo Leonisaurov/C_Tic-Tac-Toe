@@ -75,7 +75,8 @@ MOVE gemini_decide(Board board, Config conf) {
         "      ]\n"
         "    },\n"
         "    \"generationConfig\": {\n"
-        "      \"responseMimeType\": \"text/plain\"\n"
+        "      \"responseMimeType\": \"text/plain\",\n"
+        "      \"temperature\": 0.00,\n"
         "    }\n"
         "}\n";
 
@@ -92,6 +93,14 @@ MOVE gemini_decide(Board board, Config conf) {
     set_repr(board, conf, json_data, 2, 2);
 
     json_data[163] = (board.x_turn?'x':'o');
+
+    char *temp = json_data + 543;
+
+    srand(time(NULL));
+    *temp = (rand() % 9) + '0';
+
+    srand(time(NULL) * (*temp));
+    temp[1] = (rand() % 9) + '0';
 
     CURL *curl;
     CURLcode res;
