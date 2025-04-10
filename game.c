@@ -246,6 +246,7 @@ char game_with_ai(Config conf) {
                 break;
             case NONE: {
                            // Another KEY Input
+                           if (board.x_turn) break;
                            MOVE move;
                            move = gemini_decide(board, conf);
                            board.x_selected = move.x;
