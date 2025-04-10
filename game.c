@@ -244,7 +244,7 @@ char game_with_ai(Config conf) {
                 if(board.x_selected < 2)
                     board.x_selected++;
                 break;
-            case NONE: {
+            case REQUEST: {
                            // Another KEY Input
                            if (board.x_turn) break;
                            MOVE move;
@@ -254,6 +254,8 @@ char game_with_ai(Config conf) {
                            put_on_board(&board, conf);
                            break;
                        }
+            case NONE:
+                  break;
         }
 
         clear_buffer();

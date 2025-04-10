@@ -8,6 +8,7 @@ ACTION process_action() {
 
     if (n == 1) {
         switch(input[0]) {
+            case 'r':   return REQUEST;
             case 'q':   return QUIT;
             case 27:    return RETURN;
             case 10:

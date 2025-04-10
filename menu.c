@@ -27,6 +27,7 @@ char main_menu() {
             case KEY_LEFT:
             case KEY_RIGHT:
             case NONE:
+            case REQUEST:
             case RETURN:
             case QUIT:
                 break;

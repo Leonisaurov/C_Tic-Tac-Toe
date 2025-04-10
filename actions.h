@@ -7,6 +7,7 @@ typedef enum {
     KEY_LEFT,
     KEY_RIGHT,
     KEY_ENTER,
+    REQUEST,
     RETURN,
     QUIT,
     NONE,
