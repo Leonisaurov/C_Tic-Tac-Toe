@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: installing jansson
-      run: sudo apt install -y libjansson-dev
+    - name: install dependencies
+      run: sudo apt install -y libjansson-dev libcurl4-openssl-dev
     - name: make compile
       run: make compile
