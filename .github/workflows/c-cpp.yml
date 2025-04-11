@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: installing jansson
+      run: apt install -y libjansson
     - name: make compile
       run: make compile
