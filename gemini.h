@@ -1,6 +1,8 @@
 #ifndef TICTACTOE_GEMINI
 #define TICTACTOE_GEMINI
 
+#include <pthread.h>
+
 #include "game.h"
 
 typedef struct {
@@ -8,6 +10,14 @@ typedef struct {
     unsigned int y;
 } MOVE;
 
-MOVE gemini_decide(Board board, Config conf);
+typedef struct {
+    Board board;
+    Config conf;
+} CONTEXT;
+
+void* gemini_decide(void *args);
+
+bool finished_thinking();
+void start_think();
 
 #endif

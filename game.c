@@ -6,6 +6,9 @@
 #define DRAW_CELL 27
 
 #include "gemini.h"
+#include <pthread.h>
+
+#include <malloc.h>
 
 void print_board(Board *board, Config conf) {
     char player = (board->x_turn?conf.player_1_symbol:conf.player_2_symbol);
@@ -114,12 +117,9 @@ short press_to_close() {
     puts("      q to exit.");
     char c;
     short n = read(STDIN_FILENO, &c, 1);
-    fprintf(stderr, "Input: %c\n", c);
     if (n != 1) return -1;
 
-    fprintf(stderr, "Despues del error\n");
     if (c == 'r') return 1;
-    fprintf(stderr, "C, no es igual a 'r'\n");
     if (c == 'q') return 0;
 
     return 2;
@@ -195,8 +195,29 @@ char game_with_ai(Config conf) {
     Board board = new_board();
     ACTION action = KEY_UP;
 
-    _Bool end_flag = false;
+    _Bool end_flag                      = false;
+    unsigned short ai_thinking_state    = 0;
+    pthread_t ai_thinking_thread;
+    MOVE move;
     do {
+        if (finished_thinking() == 1) {
+            start_think();
+            ai_thinking_state = 0;
+            void *res;
+            pthread_join(ai_thinking_thread, &res);
+            if (res == NULL) {
+                puts("\r\x1b[KRetrying. . .");
+                continue;
+            }
+
+            move = *(MOVE*)res;
+            free(res);
+
+            board.x_selected = move.x;
+            board.y_selected = move.y;
+            if(put_on_board(&board, conf))
+                puts("\r\x1b[KRetrying. . .");
+        }
         switch(action) {
             case RETURN:
                 return RETURN_MENU_CODE;
@@ -220,7 +241,6 @@ char game_with_ai(Config conf) {
                             if (res < 1) end_flag = true;
                             else if (res == 1) {
                                 board = new_board();
-                                fprintf(stderr, "Hola\n");
                             }
                             break;
                         }
@@ -246,23 +266,57 @@ char game_with_ai(Config conf) {
                 break;
             case REQUEST: {
                            // Another KEY Input
-                           if (board.x_turn) break;
-                           MOVE move;
-                           move = gemini_decide(board, conf);
-                           board.x_selected = move.x;
-                           board.y_selected = move.y;
-                           put_on_board(&board, conf);
+                           if (board.x_turn || ai_thinking_state != 0) break;
+                           ai_thinking_state++;
+                           CONTEXT *context = (CONTEXT*) malloc(sizeof(CONTEXT));
+                           *context = (CONTEXT) {
+                               .conf = conf,
+                               .board = board
+                           };
+                           if (pthread_create(&ai_thinking_thread, NULL, gemini_decide, context)) {
+                               fprintf(stderr, "Error al crear el hilo\n");
+                               return 0;
+                           }
                            break;
                        }
             case NONE:
                   break;
         }
 
-        clear_buffer();
-        print_board(&board, conf);
-        if (!board.x_turn)
-            puts("Press 'r' to request the AI response!");
-    } while (!end_flag && (action = process_action()) != QUIT);
+        if (ai_thinking_state == 0) {
+            clear_buffer();
+            print_board(&board, conf);
+            if (!board.x_turn)
+                printf("\nPress 'r' to request the AI move");
+            fflush(stdout);
+            continue;
+        }
+
+        char *ai_msg[4] = {
+            "AI thinking",
+            "AI thinking.",
+            "AI thinking. .",
+            "AI thinking. . .",
+        };
+
+        unsigned short ai_msg_i = 0;
+        if (ai_thinking_state > 500)
+            ai_thinking_state = 1;
+
+        if (ai_thinking_state > 400)
+            ai_msg_i = 3;
+        else if (ai_thinking_state > 300)
+            ai_msg_i = 2;
+        else if (ai_thinking_state > 200)
+            ai_msg_i = 1;
+
+
+        printf("\r\x1b[K%s", ai_msg[ai_msg_i]);
+        fflush(stdout);
+        usleep(5000);
+        if (ai_thinking_state > 0)
+            ai_thinking_state++;
+    } while (!end_flag && (ai_thinking_state != 0 || (action = process_action()) != QUIT));
 
     return 0;
 }

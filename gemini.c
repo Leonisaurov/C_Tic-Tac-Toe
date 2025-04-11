@@ -5,6 +5,8 @@
 #include <jansson.h>
 #include "gemini.h"
 
+#include <stdatomic.h>
+
 // #define MODEL_ID "gemini-2.0-flash"
 #define MODEL_ID "gemini-2.0-flash-thinking-exp-01-21"
 #define GENERATE_CONTENT_API "streamGenerateContent"
@@ -49,7 +51,27 @@ void set_repr(Board board, Config conf, char *json_data, unsigned int x, unsigne
         *board_ref[x][y] = 'y';
 }
 
-MOVE gemini_decide(Board board, Config conf) {
+atomic_int end_thinking = ATOMIC_VAR_INIT(0);
+
+void finish_think() {
+    atomic_exchange(&end_thinking, 1);
+}
+
+void start_think() {
+    atomic_exchange(&end_thinking, 0);
+}
+
+bool finished_thinking() {
+    return atomic_load(&end_thinking);
+}
+
+void* gemini_decide(void *args) {
+    start_think();
+
+    CONTEXT context = *(CONTEXT*)args;
+    Board board = context.board;
+    Config conf = context.conf;
+
     char json_data[] =
         "{\n"
         "    \"contents\": [\n"
@@ -101,6 +123,14 @@ MOVE gemini_decide(Board board, Config conf) {
 
     srand(time(NULL) * (*temp));
     temp[1] = (rand() % 9) + '0';
+
+    MOVE *move = (MOVE*) malloc(sizeof(MOVE));
+    if (move == NULL) return NULL;
+
+    *move = (MOVE) {
+        .x = 0,
+        .y = 0,
+    };
 
     CURL *curl;
     CURLcode res;
@@ -169,13 +199,19 @@ MOVE gemini_decide(Board board, Config conf) {
                                         json_t *text = json_object_get(part0, "text");
                                         if(text && json_is_string(text)) {
                                             const char *resultText = json_string_value(text);
-                                            MOVE move;
-                                            if (sscanf(resultText, "%u,%u", &move.x, &move.y) == 2) {
+                                            unsigned int n1, n2;
+                                            if (sscanf(resultText, "%u,%u", &n1, &n2) == 2) {
                                                 json_decref(root);
                                                 curl_slist_free_all(headers);
                                                 curl_easy_cleanup(curl);
                                                 free(chunk.memory);
                                                 curl_global_cleanup();
+
+                                                move->x = n1;
+                                                move->y = n2;
+
+                                                free(args);
+                                                finish_think();
                                                 return move;
                                             }
                                         } else {
@@ -210,5 +246,8 @@ MOVE gemini_decide(Board board, Config conf) {
     }
     free(chunk.memory);
     curl_global_cleanup();
-    return (MOVE) {0,0};
+
+    free(args);
+    finish_think();
+    return move;
 }
