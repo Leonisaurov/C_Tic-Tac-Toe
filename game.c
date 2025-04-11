@@ -179,6 +179,7 @@ char game(Config conf) {
                 if(board.x_selected < 2)
                     board.x_selected++;
                 break;
+            case REQUEST:
             case NONE:
                 // Another KEY Input
                 break;
@@ -189,6 +190,31 @@ char game(Config conf) {
     } while (!end_flag && (action = process_action()) != QUIT);
 
     return 0;
+}
+
+bool get_score(Board *board, Config conf) {
+    bool end_flag = false;
+    char c = check_win(*board);
+    if (c != INIT_CELL) {
+        while (true) {
+            clear_buffer();
+            print_board(board, conf);
+            if (c == DRAW_CELL)
+                printf("\nDraw! Anyone win. . .\n");
+            else
+                printf("\nThe %c player are the winner!\n", c);
+            short res = press_to_close();
+            if (res == 2) continue;
+
+            if (res < 1) end_flag = true;
+            else if (res == 1) {
+                *board = new_board();
+            }
+            return end_flag;
+        }
+        return end_flag;
+    }
+    return end_flag;
 }
 
 char game_with_ai(Config conf) {
@@ -215,8 +241,10 @@ char game_with_ai(Config conf) {
 
             board.x_selected = move.x;
             board.y_selected = move.y;
-            if(put_on_board(&board, conf))
+            if(!put_on_board(&board, conf))
                 puts("\r\x1b[KRetrying. . .");
+            else
+                end_flag = get_score(&board, conf);
         }
         switch(action) {
             case RETURN:
@@ -226,26 +254,7 @@ char game_with_ai(Config conf) {
                 break;
             case KEY_ENTER:
                 if (board.x_turn && put_on_board(&board, conf)) {
-                    char c = check_win(board);
-                    if (c != INIT_CELL) {
-                        while (true) {
-                            clear_buffer();
-                            print_board(&board, conf);
-                            if (c == DRAW_CELL)
-                                printf("\nDraw! Anyone win. . .\n");
-                            else
-                                printf("\nThe %c player are the winner!\n", c);
-                            short res = press_to_close();
-                            if (res == 2) continue;
-
-                            if (res < 1) end_flag = true;
-                            else if (res == 1) {
-                                board = new_board();
-                            }
-                            break;
-                        }
-                        break;
-                    }
+                    end_flag = get_score(&board, conf);
                 }
                 break;
             case KEY_UP:
