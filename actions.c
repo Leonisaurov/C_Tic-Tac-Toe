@@ -4,7 +4,7 @@
 ACTION process_action() {
     char input[3];
     int n = read(STDIN_FILENO, input, 3);
-    if (n < 1) return QUIT;
+    if (n == 0) return QUIT;
 
     if (n == 1) {
         switch(input[0]) {
