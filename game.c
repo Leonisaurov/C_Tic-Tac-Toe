@@ -11,6 +11,8 @@
 #include <malloc.h>
 #include <fcntl.h>
 
+#include <signal.h>
+
 void print_board(Board *board, Config conf) {
     char player = (board->x_turn?conf.player_1_symbol:conf.player_2_symbol);
     unsigned short color[3];
