@@ -1,1 +1,4 @@
 tictactoe
+*.o
+pollinations.http
+log

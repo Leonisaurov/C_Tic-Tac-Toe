@@ -5,7 +5,7 @@
 #include "menu.h"
 #define DRAW_CELL 27
 
-#include "gemini.h"
+#include "ai_module.h"
 #include <pthread.h>
 
 #include <malloc.h>
