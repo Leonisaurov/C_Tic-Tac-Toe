@@ -158,7 +158,7 @@ void* gemini_decide(void *args) {
     // Cuerpo JSON de la petición (igual que en el script bash)
 
     char Authorization[256];
-    int n = snprintf(Authorization, sizeof(Authorization), "Authorization: Bearer %s", "sk_GoNGdYs0HjKzKl8g9lL8zqQpf3SKTHeq");
+    int n = snprintf(Authorization, sizeof(Authorization), "Authorization: Bearer %s", POLLINATIONS_API_KEY);
     Authorization[n] = '\0';
    
     // Inicializar curl
