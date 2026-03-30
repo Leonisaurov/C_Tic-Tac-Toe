@@ -1,4 +1,4 @@
-BINARY ?= "tictactoe"
+BINARY ?= tictactoe
 DEV ?= FALSE
 BIN_DIR ?= /usr/local/bin
 SRCS=$(wildcard *.c)
@@ -16,6 +16,8 @@ endif
 
 ${BINARY}: ${OBJS}
 	$(COMPILE_CMD) ${OBJS} -o $@ ${FLAGS}
+
+build: ${BINARY}
 
 run: ${BINARY}
 	./${BINARY}
