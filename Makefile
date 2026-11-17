@@ -17,7 +17,7 @@ endif
 ${BINARY}: ${OBJS}
 	$(COMPILE_CMD) ${OBJS} -o $@ ${FLAGS}
 
-build: ${BINARY}
+build compile: ${BINARY}
 
 run: ${BINARY}
 	./${BINARY}
