@@ -22,7 +22,7 @@ char main_menu() {
                 if (cursor > 0) cursor--;
                 break;
             case KEY_DOWN:
-                if (cursor < 6) cursor++;
+                if (cursor < 8) cursor++;
                 break;
             case KEY_LEFT:
             case KEY_RIGHT:
