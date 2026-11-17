@@ -13,6 +13,7 @@ typedef struct {
 typedef struct {
     Board board;
     Config conf;
+    char api_key[256];
 } CONTEXT;
 
 void* gemini_decide(void *args);

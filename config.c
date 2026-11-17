@@ -5,6 +5,7 @@
 
 unsigned short player_1_color[3] = {200, 100, 150};
 unsigned short player_2_color[3] = {100, 200, 150};
+char pollinations_api_key[256] = "";
 
 Option opts[] = {
     {
@@ -26,6 +27,11 @@ Option opts[] = {
         .question = "Player 2 color: ",
         .type = COLOR_OPTION,
         .value = (int*) player_2_color,
+    },
+    {
+        .question = "Pollinations API Key: ",
+        .type = CHAR_OPTION,
+        .value = (void*) pollinations_api_key,
     },
     {
         .question = "  Start Game  ",
@@ -73,6 +79,11 @@ void set_conf(Config *conf, char *title, void* any) {
         conf->player_2_color[2] = color[2];
         return;
     }
+    if (strcmp(title, opts[4].question) == 0) {
+        strncpy(conf->pollinations_api_key, (char*)any, 255);
+        conf->pollinations_api_key[255] = '\0';
+        return;
+    }
 }
 
 bool is_numeric(char c) {
@@ -107,11 +118,26 @@ int set_option(unsigned int i, Config *conf) {
     unsigned short color[3] = {0, 0, 0};
     switch(opt.type) {
         case CHAR_OPTION:
-            printf("\n%s", question);
-            fflush(stdout);
-            read(STDIN_FILENO, &c, 1);
-            opts[i].value = (void*)c;
-            set_conf(conf, opts[i].question, (void*)c);
+            if (strcmp(question, "Pollinations API Key: ") == 0) {
+                char input[256] = "";
+                printf("\n%s", question);
+                fflush(stdout);
+                int n = read(STDIN_FILENO, input, 255);
+                if (n > 0) {
+                    input[n] = '\0';
+                    // Remove trailing newline if present
+                    if (input[n-1] == '\n') input[n-1] = '\0';
+                    strncpy((char*)opts[i].value, input, 255);
+                    ((char*)opts[i].value)[255] = '\0';
+                    set_conf(conf, opts[i].question, opts[i].value);
+                }
+            } else {
+                printf("\n%s", question);
+                fflush(stdout);
+                read(STDIN_FILENO, &c, 1);
+                opts[i].value = (void*)c;
+                set_conf(conf, opts[i].question, (void*)c);
+            }
             break;
         case COLOR_OPTION:
             puts("");

@@ -10,6 +10,7 @@
 
 #include <malloc.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include <signal.h>
 
@@ -220,8 +221,11 @@ char game_with_ai(Config conf) {
                 CONTEXT *context = (CONTEXT*) malloc(sizeof(CONTEXT));
                 *context = (CONTEXT) {
                     .conf = conf,
-                        .board = board
+                    .board = board,
+                    .api_key = ""
                 };
+                strncpy(context->api_key, conf.pollinations_api_key, 255);
+                context->api_key[255] = '\0';
                 if (pthread_create(&ai_thinking_thread, NULL, gemini_decide, context)) {
                     fprintf(stderr, "Error al crear el hilo\n");
                     return 0;
@@ -243,8 +247,11 @@ char game_with_ai(Config conf) {
                 CONTEXT *context = (CONTEXT*) malloc(sizeof(CONTEXT));
                 *context = (CONTEXT) {
                     .conf = conf,
-                        .board = board
+                    .board = board,
+                    .api_key = ""
                 };
+                strncpy(context->api_key, conf.pollinations_api_key, 255);
+                context->api_key[255] = '\0';
                 if (pthread_create(&ai_thinking_thread, NULL, gemini_decide, context)) {
                     fprintf(stderr, "Error al crear el hilo\n");
                     return 0;
@@ -296,8 +303,11 @@ char game_with_ai(Config conf) {
                            CONTEXT *context = (CONTEXT*) malloc(sizeof(CONTEXT));
                            *context = (CONTEXT) {
                                .conf = conf,
-                               .board = board
+                               .board = board,
+                               .api_key = ""
                            };
+                           strncpy(context->api_key, conf.pollinations_api_key, 255);
+                           context->api_key[255] = '\0';
                            if (pthread_create(&ai_thinking_thread, NULL, gemini_decide, context)) {
                                fprintf(stderr, "Error al crear el hilo\n");
                                return 0;

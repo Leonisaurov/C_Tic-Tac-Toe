@@ -11,7 +11,6 @@
 #define MODEL_ID "gemini-2.0-flash-thinking-exp-01-21"
 #define GENERATE_CONTENT_API "streamGenerateContent"
 
-#define POLLINATIONS_API_KEY "pk_SuqotQyyUiac3CFo"
 #define POLLINATIONS_END_POINT "https://gen.pollinations.ai/v1/chat/completions"
 
 // Estructura para acumular la respuesta en memoria
@@ -157,8 +156,9 @@ void* gemini_decide(void *args) {
 
     // Cuerpo JSON de la petición (igual que en el script bash)
 
-    char Authorization[256];
-    int n = snprintf(Authorization, sizeof(Authorization), "Authorization: Bearer %s", POLLINATIONS_API_KEY);
+    // Usar la API key del contexto (proporcionada por el usuario al registrarse)
+    char Authorization[512];
+    int n = snprintf(Authorization, sizeof(Authorization), "Authorization: Bearer %s", context.api_key);
     Authorization[n] = '\0';
    
     // Inicializar curl

@@ -8,6 +8,7 @@ typedef struct {
     char player_2_symbol;
     unsigned short player_1_color[3];
     unsigned short player_2_color[3];
+    char pollinations_api_key[256];
 } Config;
 
 static Config get_default_config() {
@@ -20,6 +21,7 @@ static Config get_default_config() {
         .player_2_color = {
             100, 200, 150
         },
+        .pollinations_api_key = "",
     };
 }
 
